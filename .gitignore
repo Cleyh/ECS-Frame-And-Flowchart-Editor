@@ -1,0 +1,9 @@
+/thirdparty_install/*
+/build/*
+/include/vcpkg/*
+/.vs/*
+/CMakeFiles/*
+/out/*
+/vcpkg_installed/*
+/debug/*
+/release/*

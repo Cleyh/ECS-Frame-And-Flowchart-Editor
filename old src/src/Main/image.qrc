@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/peiqi.png</file>
+        <file>image/cursor_icon.svg</file>
+        <file>image/save_icon.svg</file>
+        <file>image/openfile_icon.svg</file>
+        <file>image/export_icon.svg</file>
+        <file>image/newfile_icon.svg</file>
+
+    </qresource>
+</RCC>
