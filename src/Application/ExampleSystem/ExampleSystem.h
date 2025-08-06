@@ -40,3 +40,8 @@ class EPositionSystem
     : public ISystem<MovementSystem>
 {
 };
+
+class EGlobalSystem
+    : public IGlobalSystem
+{
+};

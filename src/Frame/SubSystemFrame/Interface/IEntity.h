@@ -4,24 +4,45 @@
 #include "../SystemUtils.h"
 #include "IComponent.h"
 
-typedef QSet<size_t> ComponentIdSet;
-typedef QHash<size_t, IComponent *> ComponentMap;
+using ComponentIdSet = QSet<size_t>;
+using ComponentMap = QHash<size_t, IComponent *>;
 
+/// @brief Entity对象
 class IEntityObject
 {
 public:
-    virtual void Attach(IComponent *component)
+    virtual void attach(IComponent *component)
     {
         // 将组件附加到实体
         components.insert(typeid(*component).hash_code(), component);
     }
-    virtual ComponentIdSet getComponentIds() const = 0;
+
+    virtual ComponentIdSet getComponentIds() const
+    {
+        return components.keys().toSet();
+    }
+
+    virtual IComponent *getComponent(size_t componentId)
+    {
+        return components.value(componentId);
+    }
+
     virtual ~IEntityObject() = default;
+
+public:
+    virtual IComponent *operator[](size_t componentId)
+    {
+        return getComponent(componentId);
+    }
 
 protected:
     ComponentMap components; // 存储组件的映射
 };
 
+/// @brief
+/// Entity中间对象
+/// @tparam ...Args
+/// 固定组件类型
 template <typename... Args>
 class IEntity : public IEntityObject
 {
@@ -29,15 +50,16 @@ class IEntity : public IEntityObject
 
 public:
     // 返回快速查找组件的标识符
-    static ComponentIdSet getComponentIds()
+    static ComponentIdSet getStaticComponentIds()
     {
         ComponentIdSet ids;
         (ids.insert(typeid(Args).hash_code()), ...); // 使用 typeid 获取每个组件的唯一标识符
         return ids;
     }
+
     ComponentIdSet getComponentIds() const override
     {
-        return IEntity::getComponentIds(); // 调用静态方法获取组件标识符
+        return IEntityObject::getComponentIds();
     }
 
 protected:

@@ -1,7 +1,5 @@
-#include "System.h"
-
-static GlobleSystem *GetSystem()
+static IGlobalSystem *GetSystem()
 {
-    static GlobleSystem systemInstance;
+    static IGlobalSystem systemInstance;
     return &systemInstance;
 }
