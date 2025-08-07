@@ -1,31 +1,52 @@
-#pragma once
+﻿#pragma once
+#include <type_traits>
 #include <functional>
-#include <vector>
 #include <QVector>
 
-class IEntityObject; // 前向声明
-class ISubSystem;
-template <typename... SubSystems>
-class ISystem;
-class IGlobalSystem;
+// 前向声明
+class IEntityObject;
+class ISubSystemObject;
+class ISystemObject;
+class IQuery;
 
-using EntityList = QVector<IEntityObject *>;
+using SubSystemList = QVector<ISubSystemObject*>;
 
-// 方案一：使用 std::function 简化 SubSystem
-using SubSystemFunction = std::function<void()>;
-using SubSystemList = std::vector<SubSystemFunction>;
+using EntityList = QVector<IEntityObject*>;
+using SystemList = QVector<ISystemObject*>;
 
-/// 子系统接口（保留原有接口用于兼容性）
-/// 表示每个处理实体或组件的逻辑单元，即一个函数实现
-class ISubSystem
+/// 子系统基类
+class ISubSystemObject
 {
 public:
-    virtual void execute() = 0;
-    
-    // 转换为函数形式
-    SubSystemFunction toFunction() {
-        return [this]() { this->execute(); };
-    }
+	virtual void executeBase(IQuery* queries) = 0;
+};
+
+/// 子系统接口
+/// 表示每个处理实体或组件的逻辑单元，即一个函数实现
+template <typename QueryType>
+class ISubSystem
+	: public ISubSystemObject
+{
+	static_assert(std::is_base_of_v<IQuery, QueryType>, "All QueryType must be derived from IQuery");
+
+public:
+	virtual void execute(QueryType& queries) = 0;
+	void executeBase(IQuery* queries) override
+	{
+		auto typeQuery = QueryType();
+		execute(typeQuery);
+	}
+};
+
+/// 系统基类
+class ISystemObject
+{
+public:
+	virtual void notify(/* notify */);
+	virtual void addSubSystem(ISubSystemObject* subSystem);
+
+private:
+	SubSystemList subSystems; // 存储子系统列表
 };
 
 /// 系统接口
@@ -33,60 +54,35 @@ public:
 /// 例如：渲染系统、物理系统等
 template <typename... SubSystems>
 class ISystem
+	: public ISystemObject
 {
-    static_assert((std::is_base_of_v<ISubSystem, SubSystems> && ...), "All SubSystems must be derived from ISubSystem");
-    
-private:
-    SubSystemList subSystems;
-    
+	static_assert((std::is_base_of_v<ISubSystemObject, SubSystems> && ...), "All SubSystems must be derived from ISubSystem");
+
 public:
-    // 添加函数式子系统
-    void addSubSystem(SubSystemFunction func) {
-        subSystems.push_back(func);
-    }
-    
-    // 添加 lambda 或函数对象
-    template<typename Func>
-    void addSubSystem(Func&& func) {
-        subSystems.push_back(std::forward<Func>(func));
-    }
-    
-    // 执行所有子系统
-    void execute() {
-        for (auto& subSystem : subSystems) {
-            subSystem();
-        }
-    }
+	ISystem()
+	{
+		(addSubSystem(new SubSystems()), ...);
+	}
 };
 
-// 方案二：模板化的系统查询和组件访问
-template<typename... Components>
-using QueryFunction = std::function<void(Components&...)>;
-
-template<typename... Components>
-class Query {
-public:
-    void forEach(QueryFunction<Components...> func, EntityList& entities) {
-        // 这里需要实现实际的组件查询逻辑
-        // 遍历实体，获取对应组件，调用函数
-    }
-};
-
-// 方案三：使用宏简化子系统注册
-#define REGISTER_SUBSYSTEM(SystemName, Function) \
-    SystemName.addSubSystem([&]() { Function; });
-
-/// @brief 全局系统接口
+/// 全局系统接口
 /// 用于管理实体和组件的全局访问点
 /// 例如：注册实体、获取实体、所有系统等
 class IGlobalSystem
 {
 public:
-    virtual void addEntity(IEntityObject *entity)
-    {
-        entityList.append(entity);
-    }
+	IGlobalSystem();
+	virtual void addSystem(ISystemObject* system);
+	virtual void addEntity(IEntityObject* entity);
+	virtual EntityList* getEntities();
+	static IGlobalSystem* getInstance() { return &instance; };
+
+public:
+	virtual void notify(/* notify */);
 
 private:
-    EntityList entityList;
+	static IGlobalSystem instance; // 单例实例
+
+	EntityList m_entities;
+	SystemList m_systems; // 存储系统列表
 };

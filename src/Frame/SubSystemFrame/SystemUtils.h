@@ -1,5 +1,14 @@
-static IGlobalSystem *GetSystem()
+﻿#pragma once
+#include "Interface/ISystem.h"
+
+namespace ECS
 {
-    static IGlobalSystem systemInstance;
-    return &systemInstance;
-}
+    namespace Utils
+    {
+        /// 获取全局系统实例
+        static IGlobalSystem *GlobalSystem()
+        {
+            return IGlobalSystem::getInstance();
+        }
+    }
+}; // namespace ECS

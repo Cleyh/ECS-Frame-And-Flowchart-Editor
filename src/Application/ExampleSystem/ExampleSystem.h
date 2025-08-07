@@ -1,27 +1,23 @@
 #pragma once
 
 #include "SubSystemFrame.h"
+#include <string>
+#include <qdebug.h>
 
 class EPosition
     : public IComponent
 {
 public:
-    EPosition(int x = 0, int y = 0) : x(x), y(y)
-    {
-    }
-
-    int x;
-    int y;
-
-    bool operator==(const EPosition &other) const
-    {
-        return x == other.x && y == other.y;
-    }
+    int x = 0;
+    int y = 0;
 };
 
 class EPlayer
     : public IComponent
 {
+public:
+    std::string player_name = "default player";
+    int player_id = 0;
 };
 
 class EPlayerEntity
@@ -29,19 +25,13 @@ class EPlayerEntity
 {
 };
 
+class HandlePlayerMove
+    : public ISubSystem<IQuerySingle<EPosition, EPlayer>>
+{
+    void execute(IQuerySingle<EPosition, EPlayer> &query) override;
+};
+
 class MovementSystem
-    : public ISubSystem
-{
-    void execute() override {
-    }
-};
-
-class EPositionSystem
-    : public ISystem<MovementSystem>
-{
-};
-
-class EGlobalSystem
-    : public IGlobalSystem
+    : public ISystem<HandlePlayerMove>
 {
 };

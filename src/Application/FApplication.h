@@ -1,9 +1,12 @@
 #pragma once
 
 #include <QApplication>
+#include <SubSystemFrame.h>
 #include "FMainWindow.h"
 
-class FApplication : public QApplication
+class FApplication
+    : public QApplication,
+      public IGlobalSystem
 {
     Q_OBJECT
 public:
