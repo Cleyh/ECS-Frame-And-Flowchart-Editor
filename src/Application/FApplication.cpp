@@ -21,17 +21,22 @@ void FApplication::initialize()
 
     IEntity<EPosition, EPlayer> playerEntity;
     MovementSystem movementSystem;
-    
+
     IGlobalSystem::getInstance()->addSystem(&movementSystem);
     IGlobalSystem::getInstance()->notify();
     qDebug() << "FApplication initialized with main window and systems.";
-
 }
 
 void FApplication::cleanup()
 {
-    if (mainWindow) {
+    if (mainWindow)
+    {
         delete mainWindow;
         mainWindow = nullptr;
     }
+}
+
+bool FApplication::notify(QObject *qobject, QEvent *qevent)
+{
+    return QApplication::notify(qobject, qevent);
 }

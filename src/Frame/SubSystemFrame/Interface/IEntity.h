@@ -21,7 +21,8 @@ public:
     template <typename T>
     void attach()
     {
-        static_assert(std::is_base_of_v<IComponent, T>, "T must be derived from IComponent");
+        static_assert(std::is_base_of_v<IComponent, T>,
+                      "T must be derived from IComponent");
         attach(new T());
     }
     /// 获取组件的唯一标识符集合
@@ -45,7 +46,8 @@ protected:
 template <typename... Args>
 class IEntity : public IEntityObject
 {
-    static_assert((std::is_base_of_v<IComponent, Args> && ...), "All Args must be derived from IComponent");
+    static_assert((std::is_base_of_v<IComponent, Args> && ...),
+                  "All Args must be derived from IComponent");
 
 public:
     /// 获取组件实例

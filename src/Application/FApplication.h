@@ -15,6 +15,7 @@ public:
 
     void initialize();
     void cleanup();
+    bool notify(QObject *, QEvent *) override;
 
 private:
     FMainWindow *mainWindow;

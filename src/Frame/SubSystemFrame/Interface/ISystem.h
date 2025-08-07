@@ -9,44 +9,45 @@ class ISubSystemObject;
 class ISystemObject;
 class IQuery;
 
-using SubSystemList = QVector<ISubSystemObject*>;
+using SubSystemList = QVector<ISubSystemObject *>;
 
-using EntityList = QVector<IEntityObject*>;
-using SystemList = QVector<ISystemObject*>;
+using EntityList = QVector<IEntityObject *>;
+using SystemList = QVector<ISystemObject *>;
 
 /// 子系统基类
 class ISubSystemObject
 {
 public:
-	virtual void executeBase(IQuery* queries) = 0;
+    virtual void executeBase(IQuery *queries) = 0;
 };
 
 /// 子系统接口
 /// 表示每个处理实体或组件的逻辑单元，即一个函数实现
 template <typename QueryType>
 class ISubSystem
-	: public ISubSystemObject
+    : public ISubSystemObject
 {
-	static_assert(std::is_base_of_v<IQuery, QueryType>, "All QueryType must be derived from IQuery");
+    static_assert(std::is_base_of_v<IQuery, QueryType>,
+                  "All QueryType must be derived from IQuery");
 
 public:
-	virtual void execute(QueryType& queries) = 0;
-	void executeBase(IQuery* queries) override
-	{
-		auto typeQuery = QueryType();
-		execute(typeQuery);
-	}
+    virtual void execute(QueryType &queries) = 0;
+    void executeBase(IQuery *queries) override
+    {
+        auto typeQuery = QueryType();
+        execute(typeQuery);
+    }
 };
 
 /// 系统基类
 class ISystemObject
 {
 public:
-	virtual void notify(/* notify */);
-	virtual void addSubSystem(ISubSystemObject* subSystem);
+    virtual void notify(/* notify */);
+    virtual void addSubSystem(ISubSystemObject *subSystem);
 
 private:
-	SubSystemList subSystems; // 存储子系统列表
+    SubSystemList subSystems; // 存储子系统列表
 };
 
 /// 系统接口
@@ -54,15 +55,16 @@ private:
 /// 例如：渲染系统、物理系统等
 template <typename... SubSystems>
 class ISystem
-	: public ISystemObject
+    : public ISystemObject
 {
-	static_assert((std::is_base_of_v<ISubSystemObject, SubSystems> && ...), "All SubSystems must be derived from ISubSystem");
+    static_assert((std::is_base_of_v<ISubSystemObject, SubSystems> && ...),
+                  "All SubSystems must be derived from ISubSystem");
 
 public:
-	ISystem()
-	{
-		(addSubSystem(new SubSystems()), ...);
-	}
+    ISystem()
+    {
+        (addSubSystem(new SubSystems()), ...);
+    }
 };
 
 /// 全局系统接口
@@ -71,18 +73,18 @@ public:
 class IGlobalSystem
 {
 public:
-	IGlobalSystem();
-	virtual void addSystem(ISystemObject* system);
-	virtual void addEntity(IEntityObject* entity);
-	virtual EntityList* getEntities();
-	static IGlobalSystem* getInstance() { return &instance; };
+    IGlobalSystem();
+    virtual void addSystem(ISystemObject *system);
+    virtual void addEntity(IEntityObject *entity);
+    virtual EntityList *getEntities();
+    static IGlobalSystem *getInstance() { return &instance; };
 
 public:
-	virtual void notify(/* notify */);
+    virtual void notify(/* notify */);
 
 private:
-	static IGlobalSystem instance; // 单例实例
+    static IGlobalSystem instance; // 单例实例
 
-	EntityList m_entities;
-	SystemList m_systems; // 存储系统列表
+    EntityList m_entities;
+    SystemList m_systems; // 存储系统列表
 };
