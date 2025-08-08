@@ -19,10 +19,13 @@ void FApplication::initialize()
     mainWindow = new FMainWindow();
     mainWindow->show();
 
-    IEntity<EPosition, EPlayer> playerEntity;
+    IEntity<Velocity> playerEntity;
     MovementSystem movementSystem;
 
+    IGlobalSystem::getInstance()->addEntity(&playerEntity);
     IGlobalSystem::getInstance()->addSystem(&movementSystem);
+    IGlobalSystem::getInstance()->notify();
+    IGlobalSystem::getInstance()->notify();
     IGlobalSystem::getInstance()->notify();
     qDebug() << "FApplication initialized with main window and systems.";
 }

@@ -24,7 +24,7 @@ void ISystemObject::notify(/* notify */)
 void ISystemObject::addSubSystem(ISubSystemObject *subSystem)
 {
     if (subSystem) {
-        subSystems.append(subSystem);
+        subSystems.push_back(subSystem);
     } else {
         qWarning() << "Attempted to add a null subSystem to ISystemObject.";
     }
@@ -42,12 +42,12 @@ IGlobalSystem::IGlobalSystem()
 
 void IGlobalSystem::addSystem(ISystemObject *system)
 {
-    m_systems.append(system);
+    m_systems.push_back(system);
 }
 
 void IGlobalSystem::addEntity(IEntityObject *entity)
 {
-    m_entities.append(entity);
+    m_entities.push_back(entity);
 }
 
 EntityList *IGlobalSystem::getEntities()

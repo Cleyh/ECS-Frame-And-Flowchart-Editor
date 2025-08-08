@@ -1,6 +1,6 @@
 #pragma once
-#include "SubSystemFrame/Interface/ISystem.h"
-#include "SubSystemFrame/Interface/IComponent.h"
-#include "SubSystemFrame/Interface/IEntity.h"
-#include "SubSystemFrame/Interface/IQuery.h"
-#include "SubSystemFrame/SystemUtils.h"
+#include "ECSFrame/Interface/ISystem.h"
+#include "ECSFrame/Interface/IComponent.h"
+#include "ECSFrame/Interface/IEntity.h"
+#include "ECSFrame/Interface/IQuery.h"
+#include "ECSFrame/SystemUtils.h"

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <type_traits>
 #include <functional>
-#include <QVector>
+#include <vector>
 
 // 前向声明
 class IEntityObject;
@@ -9,10 +9,10 @@ class ISubSystemObject;
 class ISystemObject;
 class IQuery;
 
-using SubSystemList = QVector<ISubSystemObject *>;
+using SubSystemList = std::vector<ISubSystemObject *>;
 
-using EntityList = QVector<IEntityObject *>;
-using SystemList = QVector<ISystemObject *>;
+using EntityList = std::vector<IEntityObject *>;
+using SystemList = std::vector<ISystemObject *>;
 
 /// 子系统基类
 class ISubSystemObject
@@ -47,7 +47,7 @@ public:
     virtual void addSubSystem(ISubSystemObject *subSystem);
 
 private:
-    SubSystemList subSystems; // 存储子系统列表
+    SubSystemList subSystems;
 };
 
 /// 系统接口
@@ -83,8 +83,8 @@ public:
     virtual void notify(/* notify */);
 
 private:
-    static IGlobalSystem instance; // 单例实例
+    static IGlobalSystem instance;
 
     EntityList m_entities;
-    SystemList m_systems; // 存储系统列表
+    SystemList m_systems;
 };

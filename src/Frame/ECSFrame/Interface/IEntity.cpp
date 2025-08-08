@@ -1,23 +1,24 @@
 #include "IEntity.h"
-#include "SubSystemFrame/SystemUtils.h"
+#include "ECSFrame/SystemUtils.h"
 
 /////////////////////////////////////////////////
 // IEntityObject implementation
 /////////////////////////////////////////////////
 void IEntityObject::attach(IComponent *component)
 {
-    components.insert(typeid(*component).hash_code(), component);
+    size_t componentId = component->getComponentId();
+    components[componentId] = component;
 }
 
 ComponentIdSet IEntityObject::getComponentIds() const
 {
-    auto keys = components.keys();
+    auto keys = components;
     return ComponentIdSet(keys.begin(), keys.end());
 }
 
 IComponent *IEntityObject::getComponent(size_t componentId)
 {
-    return components.value(componentId, nullptr);
+    return components.at(componentId);
 }
 
 void IEntityObject::setComponent(size_t componentId, IComponent *component)
@@ -28,10 +29,10 @@ void IEntityObject::setComponent(size_t componentId, IComponent *component)
         return;
     }
 
-    auto old_component = components.value(componentId);
+    auto old_component = components.at(componentId);
     if (old_component)
     {
-        delete old_component; // 删除旧组件
+        delete old_component;    // 删除旧组件
         old_component = nullptr; // 清空指针
     }
     components[componentId] = component; // 更新组件映射
@@ -39,5 +40,4 @@ void IEntityObject::setComponent(size_t componentId, IComponent *component)
 
 IEntityObject::IEntityObject()
 {
-    ECS::Utils::GlobalSystem()->addEntity(this);
 }

@@ -4,31 +4,60 @@
 #include <string>
 #include <qdebug.h>
 
-class EPosition
-    : public IComponent
+// class EPosition
+//     : public IComponent
+// {
+// public:
+//     int x = 0;
+//     int y = 0;
+// };
+
+// class EPlayer
+//     : public IComponent
+// {
+// public:
+//     std::string player_name = "default player";
+//     int player_id = 0;
+// };
+
+// class EPlayerEntity
+//     : public IEntity<EPosition, EPlayer>
+// {
+// };
+
+// class HandlePlayerMove
+//     : public ISubSystem<IQuerySingle<EPosition, EPlayer>>
+// {
+//     void execute(IQuerySingle<EPosition, EPlayer> &query) override;
+// };
+
+// class MovementSystem
+//     : public ISystem<HandlePlayerMove>
+// {
+// };
+
+struct Velocity
 {
-public:
-    int x = 0;
-    int y = 0;
+    int vx = 0;
+    int vy = 0;
 };
 
-class EPlayer
-    : public IComponent
-{
-public:
-    std::string player_name = "default player";
-    int player_id = 0;
-};
-
-class EPlayerEntity
-    : public IEntity<EPosition, EPlayer>
-{
-};
+// class ECarEntity
+//     : public IEntity<Velocity>
+// {
+// };
 
 class HandlePlayerMove
-    : public ISubSystem<IQuerySingle<EPosition, EPlayer>>
+    : public ISubSystem<IQuerySingle<Velocity>>
 {
-    void execute(IQuerySingle<EPosition, EPlayer> &query) override;
+    void execute(IQuerySingle<Velocity> &query) override{
+        auto single = query.single();
+        Velocity *velocity = single.getValue<Velocity>();
+        velocity->vx += 1;
+        velocity->vy += 1;
+        qDebug() << "Player moved with velocity (" << velocity->vx << ", " << velocity->vy << ")";
+        qDebug() << "Executing player move logic";
+    }
 };
 
 class MovementSystem
