@@ -90,3 +90,12 @@ public:
         auto ids = IEntity<Args...>::ComponentIds();
     }
 };
+
+template <typename... Args>
+class IQueryMul
+    : public IQuery
+{
+    void buildQuery() override
+    {
+    }
+};

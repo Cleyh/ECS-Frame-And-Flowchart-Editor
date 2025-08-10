@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QApplication>
-#include <SubSystemFrame.h>
+#include <ECSFrame.h>
 #include "FMainWindow.h"
 
 class FApplication
