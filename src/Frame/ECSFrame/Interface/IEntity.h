@@ -1,12 +1,17 @@
 ﻿#pragma once
+
 #include <type_traits>
 #include <unordered_set>
 #include <unordered_map>
-#include "../SystemUtils.h"
+
 #include "IComponent.h"
 
-using ComponentIdSet = std::unordered_set<size_t>;
-using ComponentMap = std::unordered_map<size_t, IComponent *>;
+#include "ECSFrame/Range/RangeSet.h"
+#include "ECSFrame/SystemUtils.h"
+
+/* Entity */
+using IdSet = ESet<size_t>;
+using ComponentMap = EMap<size_t, IComponent *>;
 
 /// Entity基础对象
 /// 组件的容器，组件不可重复
@@ -25,7 +30,7 @@ public:
     }
 
 public:
-    virtual ComponentIdSet getComponentIds() const;
+    virtual IdSet getComponentIds();
 
     virtual IComponent *getComponent(size_t componentId);
 
@@ -43,9 +48,6 @@ protected:
 template <typename... Args>
 class IEntity : public IEntityObject
 {
-    static_assert((!std::is_base_of_v<IComponent, Args> && ...),
-                  "All Args should be not IComponent");
-
 public:
     template <typename T>
     IComponentWrapper<T> *getComponent()
@@ -74,18 +76,21 @@ public:
     }
 
 public:
-    static ComponentIdSet getStaticComponentIds()
+    static IdSet ComponentIds()
     {
-        ComponentIdSet ids;
-        (ids.insert(typeid(Args).hash_code()), ...);
+        IdSet ids;
+        (
+            ids.insert(IComponentWrapper<Args>::TypeId()),
+            ...);
         return ids;
     }
 
 public:
     IEntity()
     {
-        (attach<IComponentWrapper<Args>>(),
-         ...);
+        (
+            attach<IComponentWrapper<Args>>(),
+            ...);
     }
 
 public:

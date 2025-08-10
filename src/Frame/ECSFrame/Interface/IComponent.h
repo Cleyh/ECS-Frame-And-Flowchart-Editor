@@ -1,4 +1,6 @@
 ﻿#pragma once
+
+#include <type_traits>
 #include <typeinfo>
 
 class IComponent
@@ -9,15 +11,21 @@ public:
 protected:
     IComponent() = default;
 
-public:
-    virtual size_t getComponentId() const;
-    virtual size_t getComponentInstanceId() const;
+public: /* id getter */
+    virtual size_t getTypeId() const;
+    virtual size_t getInstanceId() const;
 };
 
 template <typename T>
 class IComponentWrapper
     : public IComponent
 {
+public: /* static function */
+    static size_t TypeId()
+    {
+        return typeid(IComponentWrapper<T>).hash_code();
+    }
+
 public:
     T *Value()
     {

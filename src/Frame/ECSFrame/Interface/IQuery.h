@@ -2,13 +2,18 @@
 
 #include <type_traits>
 #include <vector>
+#include <unordered_set>
+#include <qdebug.h>
+
 #include "IComponent.h"
 #include "IEntity.h"
 
-#include "../SystemUtils.h"
+#include "ECSFrame/Range/RangeSet.h"
+#include "ECSFrame/SystemUtils.h"
 
+/* Query */
 using QueryResult = IEntityObject *;
-using QueryResults = std::vector<IEntityObject *>;
+using QueryResultList = EVector<IEntityObject *>;
 
 namespace ECS
 {
@@ -19,7 +24,7 @@ namespace ECS
         {
             // Construct result.
             IEntity<Args...> queryEntity;
-            QSet<size_t> ids = IEntity<Args...>::getStaticComponentIds(); // the component IDs we are looking for
+            IdSet ids = IEntity<Args...>::ComponentIds(); // the component IDs we are looking for
 
             for (auto id : ids)
             {
@@ -45,7 +50,7 @@ public:
     virtual void buildQuery() = 0;
 
 public:
-    QueryResults getAllResults() const { return results; }
+    QueryResultList getAllResults() const { return results; }
 
     QueryResult operator[](size_t index) const
     {
@@ -57,33 +62,31 @@ public:
     }
 
 private:
-    QueryResults results; // 存储查询结果
+    QueryResultList results; // 存储查询结果
 };
 
 /// 单一结果查询
-template <typename... Components>
+template <typename... Args>
 class IQuerySingle
     : public IQuery
 {
-    // static_assert((std::is_base_of_v<IComponent, Components> && ...), "All Components must be derived from IComponent");
-
 public:
-    IEntity<Components...> single() const
+    IEntity<Args...> single() const
     {
-        QSet<size_t> ids = IEntity<Components...>::getStaticComponentIds();
-        QVector<IEntityObject *> *entities = ECS::Utils::GlobalSystem()->getEntities();
+        IdSet ids = IEntity<Args...>::ComponentIds();
+        EntityList *entities = ECS::Utils::GlobalSystem()->getEntities();
         for (IEntityObject *entity : *entities)
         {
-            QSet<size_t> entity_ids = entity->getComponentIds();
+            IdSet entity_ids = entity->getComponentIds();
             if (entity_ids.contains(ids))
             {
-                return ECS::QueryUtils::ConvertToQueryEntity<Components...>(entity);
+                return ECS::QueryUtils::ConvertToQueryEntity<Args...>(entity);
             }
         }
-        return IEntity<Components...>();
+        return IEntity<Args...>();
     }
     void buildQuery() override
     {
-        auto ids = IEntity<Components...>::getStaticComponentIds();
+        auto ids = IEntity<Args...>::ComponentIds();
     }
 };

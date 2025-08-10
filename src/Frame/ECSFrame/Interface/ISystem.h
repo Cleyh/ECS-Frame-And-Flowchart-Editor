@@ -1,7 +1,9 @@
 ﻿#pragma once
+
 #include <type_traits>
 #include <functional>
-#include <vector>
+
+#include "ECSFrame/Range/RangeSet.h"
 
 // 前向声明
 class IEntityObject;
@@ -9,10 +11,10 @@ class ISubSystemObject;
 class ISystemObject;
 class IQuery;
 
-using SubSystemList = std::vector<ISubSystemObject *>;
-
-using EntityList = std::vector<IEntityObject *>;
-using SystemList = std::vector<ISystemObject *>;
+/* System */
+using SubSystemList = EVector<ISubSystemObject *>;
+using EntityList = EVector<IEntityObject *>;
+using SystemList = EVector<ISystemObject *>;
 
 /// 子系统基类
 class ISubSystemObject
