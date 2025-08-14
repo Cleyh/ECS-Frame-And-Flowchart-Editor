@@ -11,25 +11,10 @@
 
 void ISystemObject::notify(/* notify */)
 {
-    for(auto &subSystem : subSystems) {
-        if (subSystem) {
-            // Assuming nullptr for now, replace with actual query if needed
-            subSystem->executeBase(nullptr); 
-        } else {
-            qWarning() << "Null subSystem encountered in ISystemObject::notify.";
-        }
-    }
 }
-
-void ISystemObject::addSubSystem(ISubSystemObject *subSystem)
+void ISystemObject::addHandler(ISystemHandlerObject *handler)
 {
-    if (subSystem) {
-        subSystems.push_back(subSystem);
-    } else {
-        qWarning() << "Attempted to add a null subSystem to ISystemObject.";
-    }
 }
-
 /////////////////////////////////////////////////
 /// IGlobalSystem Implementation
 /////////////////////////////////////////////////
