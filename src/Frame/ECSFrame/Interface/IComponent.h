@@ -3,13 +3,15 @@
 #include <type_traits>
 #include <typeinfo>
 
-class IComponent
+#include "ECSFrame/Pointer/EPointer.h"
+
+class IComponentObject
 {
 public:
-    virtual ~IComponent() = default;
+    virtual ~IComponentObject() = default;
 
 protected:
-    IComponent() = default;
+    IComponentObject() = default;
 
 public: /* id getter */
     virtual size_t getTypeId() const;
@@ -17,13 +19,13 @@ public: /* id getter */
 };
 
 template <typename T>
-class IComponentWrapper
-    : public IComponent
+class IComponent
+    : public IComponentObject
 {
 public: /* static function */
     static size_t TypeId()
     {
-        return typeid(IComponentWrapper<T>).hash_code();
+        return typeid(IComponent<T>).hash_code();
     }
 
 public:
@@ -34,4 +36,16 @@ public:
 
 private:
     T m_value;
+};
+
+template <typename T>
+class IComponentWrapper
+    : public EPointer<IComponent<T>>
+{
+public:
+};
+
+class IComponentHandler
+{
+    EPointer<IComponentObject> m_component;
 };

@@ -29,7 +29,7 @@ namespace ECS
             for (auto id : ids)
             {
                 // Get the component from original entity.
-                IComponent *component = entity->getComponent(id);
+                IComponentObject *component = entity->getComponent(id);
                 if (component)
                 {
                     queryEntity.setComponent(id, component);

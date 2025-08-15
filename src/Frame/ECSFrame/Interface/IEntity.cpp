@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////
 // IEntityObject implementation
 /////////////////////////////////////////////////
-void IEntityObject::attach(IComponent *component)
+void IEntityObject::attach(IComponentObject *component)
 {
     size_t componentId = component->getTypeId();
     components.insert({componentId, component});
@@ -26,12 +26,12 @@ IdSet IEntityObject::getComponentIds()
     return IdSet::fromVector(keys);
 }
 
-IComponent *IEntityObject::getComponent(size_t componentId)
+IComponentObject *IEntityObject::getComponent(size_t componentId)
 {
     return components.get(componentId, nullptr);
 }
 
-void IEntityObject::setComponent(size_t componentId, IComponent *component)
+void IEntityObject::setComponent(size_t componentId, IComponentObject *component)
 {
     if (!components.contains(componentId))
     {

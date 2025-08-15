@@ -8,24 +8,25 @@
 
 #include "ECSFrame/Range/RangeSet.h"
 #include "ECSFrame/SystemUtils.h"
+#include "ECSFrame/Pointer/EPointer.h"
 
 /* Entity */
 using IdSet = ESet<size_t>;
-using ComponentMap = EMap<size_t, IComponent *>;
+using ComponentMap = EMap<size_t, IComponentObject *>;
 
 /// Entity基础对象
 /// 组件的容器，组件不可重复
 class IEntityObject
 {
 protected:
-    virtual void attach(IComponent *component);
+    virtual void attach(IComponentObject *component);
 
 public:
     template <typename T>
     void attach()
     {
-        static_assert(std::is_base_of_v<IComponent, T>,
-                      "T must be IComponent or derived from it");
+        static_assert(std::is_base_of_v<IComponentObject, T>,
+                      "T must be IComponentObject or derived from it");
         attach(new T());
     }
 
@@ -37,9 +38,9 @@ public:
 public:
     virtual IdSet getComponentIds();
 
-    virtual IComponent *getComponent(size_t componentId);
+    virtual IComponentObject *getComponent(size_t componentId);
 
-    virtual void setComponent(size_t componentId, IComponent *component);
+    virtual void setComponent(size_t componentId, IComponentObject *component);
 
     IEntityObject();
 
@@ -55,12 +56,12 @@ class IEntity : public IEntityObject
 {
 public:
     template <typename T>
-    IComponentWrapper<T> *getComponent()
+    IComponent<T> *getComponent()
     {
         static_assert((std::is_same_v<T, Args> || ...),
                       "T arg must be one of the template arguments");
-        IComponentWrapper<T> *component = dynamic_cast<IComponentWrapper<T> *>(
-            IEntityObject::getComponent(typeid(IComponentWrapper<T>).hash_code()));
+        IComponent<T> *component =
+            dynamic_cast<IComponent<T> *>(IEntityObject::getComponent(typeid(IComponent<T>).hash_code()));
         if (component)
         {
             return component;
@@ -85,7 +86,7 @@ public:
     {
         IdSet ids;
         (
-            ids.insert(IComponentWrapper<Args>::TypeId()),
+            ids.insert(IComponent<Args>::TypeId()),
             ...);
         return ids;
     }
@@ -94,7 +95,7 @@ public:
     IEntity()
     {
         (
-            attach<IComponentWrapper<Args>>(),
+            attach<IComponent<Args>>(),
             ...);
     }
 
