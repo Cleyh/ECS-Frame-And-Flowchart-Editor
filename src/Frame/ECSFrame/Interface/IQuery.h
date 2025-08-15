@@ -95,6 +95,23 @@ template <typename... Args>
 class IQueryMul
     : public IQuery
 {
+public:
+    EVector<IEntity<Args...>> mul() const
+    {
+        EVector<IEntity<Args...>> results;
+        IdSet ids = IEntity<Args...>::ComponentIds();
+        EntityList *entities = ECS::Utils::GlobalSystem()->getEntities();
+        for (IEntityObject *entity : *entities)
+        {
+            IdSet entity_ids = entity->getComponentIds();
+            if (entity_ids.contains(ids))
+            {
+                results.push_back(ECS::QueryUtils::ConvertToQueryEntity<Args...>(entity));
+            }
+        }
+        return results;
+    }
+
     void buildQuery() override
     {
     }

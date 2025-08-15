@@ -8,13 +8,11 @@
 
 /* 前向声明 */
 class IEntityObject;
-class ISubSystemObject;
 class ISystemObject;
 class ISystemHandlerObject;
 
 /* System */
 using HandlerList = EVector<ISystemHandlerObject *>;
-using SubSystemList = EVector<ISubSystemObject *>;
 using EntityList = EVector<IEntityObject *>;
 using SystemList = EVector<ISystemObject *>;
 
@@ -28,7 +26,7 @@ public:
     virtual void addHandler(ISystemHandlerObject *handler);
 
 private:
-    HandlerList handlers;
+    HandlerList m_handlers;
 };
 
 /// 子系统接口
@@ -43,7 +41,7 @@ public:
     void addFunction(Func function)
     {
         // 函数包装为处理器对象
-        addHandler(new ISystemHandlerWrapper<Func>(&function));
+        addHandler(new ISystemHandlerWrapper<Func>(function));
     }
 };
 

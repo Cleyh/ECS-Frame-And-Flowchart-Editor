@@ -20,12 +20,18 @@ void FApplication::initialize()
     mainWindow->show();
 
     IEntity<Velocity> playerEntity;
-    MovementSystem movementSystem;
+    IEntity<Velocity> playerEntity2;
 
+    ISystem system;
+    system.addFunction(functionalSubSystem);
+
+    IGlobalSystem::getInstance()->addSystem(&system);
     IGlobalSystem::getInstance()->addEntity(&playerEntity);
-    IGlobalSystem::getInstance()->addSystem(&movementSystem);
+
     IGlobalSystem::getInstance()->notify();
     IGlobalSystem::getInstance()->notify();
+    
+    IGlobalSystem::getInstance()->addEntity(&playerEntity2);
     IGlobalSystem::getInstance()->notify();
     qDebug() << "FApplication initialized with main window and systems.";
 }

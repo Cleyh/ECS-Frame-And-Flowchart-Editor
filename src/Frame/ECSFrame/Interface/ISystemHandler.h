@@ -3,68 +3,67 @@
 #include <type_traits>
 #include <functional>
 
-#include "IQuery.h"
+// namespace ECS
+// {
+//     namespace SystemUtils
+//     {
+//         // 检查是否为函数指针
+//         template <typename T>
+//         struct is_function_pointer : std::false_type
+//         {
+//         };
 
-namespace ECS
-{
-    namespace SystemUtils
-    {
-        // 检查是否为函数指针
-        template <typename T>
-        struct is_function_pointer : std::false_type
-        {
-        };
+//         template <typename R, typename... Args>
+//         struct is_function_pointer<R (*)(Args...)> : std::true_type
+//         {
+//         };
 
-        template <typename R, typename... Args>
-        struct is_function_pointer<R (*)(Args...)> : std::true_type
-        {
-        };
+//         // 提取函数参数类型
+//         template <typename T>
+//         struct function_traits;
 
-        // 提取函数参数类型
-        template <typename T>
-        struct function_traits;
+//         template <typename R, typename... Args>
+//         struct function_traits<R (*)(Args...)>
+//         {
+//             using return_type = R;
+//             static constexpr size_t arity = sizeof...(Args);
 
-        template <typename R, typename... Args>
-        struct function_traits<R (*)(Args...)>
-        {
-            using return_type = R;
-            static constexpr size_t arity = sizeof...(Args);
+//             template <size_t N>
+//             struct argument
+//             {
+//                 static_assert(N < arity, "error: invalid parameter index.");
+//                 using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
+//             };
+//         };
 
-            template <size_t N>
-            struct argument
-            {
-                static_assert(N < arity, "error: invalid parameter index.");
-                using type = typename std::tuple_element<N, std::tuple<Args...>>::type;
-            };
-        };
+//         // 检查函数参数是否为IQuery引用
+//         template <auto Func>
+//         constexpr static bool is_valid_function()
+//         {
+//             using FuncType = decltype(Func);
 
-        // 检查函数参数是否为IQuery引用
-        template <auto Func>
-        constexpr static bool is_valid_function()
-        {
-            using FuncType = decltype(Func);
+//             // 检查是否为函数指针
+//             if constexpr (!is_function_pointer<FuncType>::value)
+//             {
+//                 return false;
+//             }
 
-            // 检查是否为函数指针
-            if constexpr (!is_function_pointer<FuncType>::value)
-            {
-                return false;
-            }
+//             // 检查参数数量是否为1
+//             if constexpr (function_traits<FuncType>::arity != 1)
+//             {
+//                 return false;
+//             }
 
-            // 检查参数数量是否为1
-            if constexpr (function_traits<FuncType>::arity != 1)
-            {
-                return false;
-            }
+//             // 检查参数类型是否为IQuery引用或其派生类引用
+//             using ArgType = typename function_traits<FuncType>::template argument<0>::type;
+//             using BaseArgType = std::remove_reference_t<ArgType>;
 
-            // 检查参数类型是否为IQuery引用或其派生类引用
-            using ArgType = typename function_traits<FuncType>::template argument<0>::type;
-            using BaseArgType = std::remove_reference_t<ArgType>;
-
-            return std::is_reference_v<ArgType> &&
-                   std::is_base_of_v<IQuery, BaseArgType>;
-        }
-    } // namespace SystemUtils
-} // namespace ECS
+//             // return std::is_reference_v<ArgType> &&
+//             //    std::is_base_of_v<IQuery, BaseArgType>;
+//             return std::is_reference(ArgType);
+//         }
+//     } // namespace SystemUtils
+// } // namespace ECS
 
 /// 处理器对象基类接口
 class ISystemHandlerObject
@@ -91,10 +90,25 @@ public:
     void execute() override
     {
         // 执行函数
-        m_function(Args()...);
+        m_function(createArg<Args>()...);
     }
 
 private:
+    template <typename T>
+    auto createArg()
+    {
+        if constexpr (std::is_reference_v<T>)
+        {
+            using RefType = std::remove_reference_t<T>;
+            static RefType ref; // 静态变量用于返回引用
+            return std::ref(ref); // 返回静态变量的引用
+        }
+        else
+        {
+            return T{}; // 返回默认构造的值
+        }
+    }
+
     std::function<R(Args...)> m_function; // 存储函数指针
 };
 

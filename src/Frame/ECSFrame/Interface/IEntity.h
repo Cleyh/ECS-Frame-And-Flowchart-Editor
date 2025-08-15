@@ -30,6 +30,11 @@ public:
     }
 
 public:
+    virtual size_t getTypeId() const;
+
+    virtual size_t getInstanceId() const;
+
+public:
     virtual IdSet getComponentIds();
 
     virtual IComponent *getComponent(size_t componentId);

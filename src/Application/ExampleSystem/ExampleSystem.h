@@ -10,16 +10,27 @@ struct Velocity
     int vy = 0;
 };
 
-void functionalSubSystem(IQuerySingle<Velocity> &query)
+struct Position
 {
-    auto single = query.single();
-    Velocity *velocity = single.getValue<Velocity>();
-    velocity->vx += 1;
-    velocity->vy += 1;
-    qDebug() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
+    int x = 0;
+    int y = 0;
+};
+
+void functionalSubSystem(IQueryMul<Velocity> &query)
+{
+    auto entities = query.mul();
+    for(auto single : entities)
+    {
+        // Assuming single is an IEntity<Velocity>
+        // and has a method getValue to retrieve the Velocity component.
+        Velocity *velocity = single.getValue<Velocity>();
+        velocity->vx += 1;
+        velocity->vy += 1;
+        qDebug() << "entity: " << single.getInstanceId() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
+    }
 }
 
-void functionalSubSystem2(IQueryMul<Velocity> &query)
+void functionalSubSystem2(IQueryMul<Velocity> query_no_ref)
 {
     // auto single = query.single();
     // Velocity *velocity = single.getValue<Velocity>();
@@ -27,12 +38,3 @@ void functionalSubSystem2(IQueryMul<Velocity> &query)
     // velocity->vy += 1;
     // qDebug() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
 }
-
-class MovementSystem
-{
-    void main()
-    {
-        ISystem system;
-        system.addFunction(&functionalSubSystem);
-    }
-};

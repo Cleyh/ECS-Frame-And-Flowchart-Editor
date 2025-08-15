@@ -10,6 +10,16 @@ void IEntityObject::attach(IComponent *component)
     components.insert({componentId, component});
 }
 
+size_t IEntityObject::getTypeId() const
+{
+    return typeid(IEntityObject).hash_code();
+}
+
+size_t IEntityObject::getInstanceId() const
+{
+    return reinterpret_cast<size_t>(this);
+}
+
 IdSet IEntityObject::getComponentIds()
 {
     auto keys = components.keys();

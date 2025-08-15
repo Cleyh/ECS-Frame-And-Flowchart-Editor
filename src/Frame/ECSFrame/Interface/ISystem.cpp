@@ -11,9 +11,17 @@
 
 void ISystemObject::notify(/* notify */)
 {
+    for (auto &handler : m_handlers) {
+        if (handler) {
+            handler->execute();
+        } else {
+            qWarning() << "Null handler encountered in ISystemObject::notify.";
+        }
+    }
 }
 void ISystemObject::addHandler(ISystemHandlerObject *handler)
 {
+    m_handlers.push_back(handler);
 }
 /////////////////////////////////////////////////
 /// IGlobalSystem Implementation
