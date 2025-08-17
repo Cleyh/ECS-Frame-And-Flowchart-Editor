@@ -19,11 +19,11 @@ struct Position
 void functionalSubSystem(IQueryMul<Velocity> &query)
 {
     auto entities = query.mul();
-    for(auto single : entities)
+    for (auto single : entities)
     {
         // Assuming single is an IEntity<Velocity>
         // and has a method getValue to retrieve the Velocity component.
-        Velocity *velocity = single.getValue<Velocity>();
+        auto velocity = single.getValue<Velocity>();
         velocity->vx += 1;
         velocity->vy += 1;
         qDebug() << "entity: " << single.getInstanceId() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";

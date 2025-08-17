@@ -19,20 +19,24 @@ void FApplication::initialize()
     mainWindow = new FMainWindow();
     mainWindow->show();
 
-    IEntity<Velocity> playerEntity;
-    IEntity<Velocity> playerEntity2;
-
     ISystem system;
+
+    auto playerEntity = IEntity<Velocity>::create();
+    auto playerEntity2 = IEntity<Velocity>::create();
+
+    ECS::globalPool.addEntity(playerEntity);
+    ECS::globalPool.addEntity(playerEntity2);
+
     system.addFunction(functionalSubSystem);
 
-    IGlobalSystem::getInstance()->addSystem(&system);
-    IGlobalSystem::getInstance()->addEntity(&playerEntity);
+    // IGlobalSystem::getInstance()->addSystem(&system);
+    // IGlobalSystem::getInstance()->addEntity(&playerEntity);
 
-    IGlobalSystem::getInstance()->notify();
-    IGlobalSystem::getInstance()->notify();
+    // IGlobalSystem::getInstance()->notify();
+    // IGlobalSystem::getInstance()->notify();
     
-    IGlobalSystem::getInstance()->addEntity(&playerEntity2);
-    IGlobalSystem::getInstance()->notify();
+    // IGlobalSystem::getInstance()->addEntity(&playerEntity2);
+    // IGlobalSystem::getInstance()->notify();
     qDebug() << "FApplication initialized with main window and systems.";
 }
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Interface/ISystem.h"
+#include "ECSFrame/Model/System/ISystem.h"
 
 namespace ECS
 {
