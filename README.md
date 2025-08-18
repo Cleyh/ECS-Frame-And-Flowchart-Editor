@@ -2,16 +2,10 @@
 
 ## ECS架构实现介绍
 
-三大基类：
-- 实体： `IEntityObject`
-- 组件：`IComponentObject`
-- 系统：`ISystemObject`
+TODO
 
-其中系统实际还包括：
-- `ISystemObject`
-- `ISubSystemObject`
+## Feature TODO
 
-以上基类的拓展实现：
-- IEntity
-- ISubSystem
-- ISystem
+2025/8/18
+- 条件查询和结果缓存机制
+- 组件数据监控
