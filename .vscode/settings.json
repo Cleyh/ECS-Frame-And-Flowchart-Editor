@@ -106,7 +106,9 @@
     "xstddef": "cpp",
     "random": "cpp",
     "unordered_set": "cpp",
-    "qtextedit": "cpp"
+    "qtextedit": "cpp",
+    "resumable": "cpp",
+    "*.rh": "cpp"
   },
   "git.ignoreLimitWarning": true
 }

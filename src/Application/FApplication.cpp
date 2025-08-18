@@ -24,10 +24,16 @@ void FApplication::initialize()
     auto playerEntity = IEntity<Velocity>::create();
     auto playerEntity2 = IEntity<Velocity>::create();
 
-    ECS::globalPool.addEntity(playerEntity);
-    ECS::globalPool.addEntity(playerEntity2);
+    ECS::Global::Pool()->addEntity(playerEntity);
 
     system.addFunction(functionalSubSystem);
+
+    system.notify();
+    system.notify();
+
+    ECS::Global::Pool()->addEntity(playerEntity2);
+
+    system.notify();
 
     // IGlobalSystem::getInstance()->addSystem(&system);
     // IGlobalSystem::getInstance()->addEntity(&playerEntity);

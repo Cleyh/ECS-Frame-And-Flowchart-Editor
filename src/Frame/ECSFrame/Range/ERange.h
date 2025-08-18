@@ -26,9 +26,9 @@ public: /* getter */
         return defaultValue;
     }
 
-    std::vector<K> keys()
+    EVector<K> keys()
     {
-        std::vector<K> keyList;
+        EVector<K> keyList;
         for (const auto &pair : *this)
         {
             keyList.push_back(pair.first);

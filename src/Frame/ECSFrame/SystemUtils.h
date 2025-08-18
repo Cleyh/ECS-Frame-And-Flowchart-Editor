@@ -1,14 +1,40 @@
 ﻿#pragma once
-#include "ECSFrame/Model/System/ISystem.h"
+#include "ECSFrame/Global/GlobalPool.h"
+#include "ECSFrame/Global/GlobalQuery.h"
 
 namespace ECS
 {
-    namespace Utils
+    namespace Global
     {
-        /// 获取全局系统实例
-        static IGlobalSystem *GlobalSystem()
+        static GlobalPool globalpool;
+        static GlobalQuery globalquery;
+
+        /**
+         * Global Pool Accessor
+         * Provides static access to the global pool and query.
+         */
+        static EPointer<GlobalPool> Pool()
         {
-            return IGlobalSystem::getInstance();
+            return EPointer<GlobalPool>{
+                &globalpool,
+                [](GlobalPool *ptr) {}};
+        }
+
+        static EPointer<EntityMap> Entities()
+        {
+            return Pool()->getEntities();
+        }
+
+        /**
+         * Global Query Accessor
+         * Provides static access to the global query.
+         */
+        static EPointer<GlobalQuery> Query()
+        {
+            return EPointer<GlobalQuery>{
+                &globalquery,
+                [](GlobalQuery *ptr) {}};
         }
     }
-}; // namespace ECS
+
+} // namespace ECS

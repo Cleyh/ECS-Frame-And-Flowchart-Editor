@@ -3,27 +3,27 @@
 #include <type_traits>
 #include <vector>
 #include <unordered_set>
-#include <qdebug.h>
 
 #include "ECSFrame/Model/System/ISystem.h"
 #include "ECSFrame/Model/Entity/IEntity.h"
 
+#include "ECSFrame/Pointer/EPointer.h"
 #include "ECSFrame/Range/ERange.h"
 #include "ECSFrame/SystemUtils.h"
 
 /* Query */
-using QueryResult = IEntityObject *;
-using QueryResultList = EVector<IEntityObject *>;
+using QueryResult = EPointer<IEntityObject>;
+using QueryResultList = EVector<EPointer<IEntityObject>>;
 
 namespace ECS
 {
     namespace QueryUtils
     {
         template <typename... Args>
-        static IEntity<Args...> ConvertToQueryEntity(IEntityObject *entity)
+        static EPointer<IEntity<Args...>> ConvertToQueryEntity(EPointer<IEntityObject> entity)
         {
             // Construct result.
-            IEntity<Args...> queryEntity;
+            auto queryEntity = EPointer<IEntity<Args...>>::make();
             IdSet ids = IEntity<Args...>::ComponentIds(); // the component IDs we are looking for
 
             for (auto id : ids)
@@ -32,13 +32,10 @@ namespace ECS
                 auto component = entity->getComponent(id);
                 if (component)
                 {
-                    queryEntity.setComponent(id, component);
-                }
-                else
-                {
-                    qWarning() << "Component with ID" << id << "not found in entity.";
+                    queryEntity->setComponent(id, component);
                 }
             }
+
             return queryEntity;
         }
     }
@@ -71,16 +68,16 @@ class IQuerySingle
     : public IQuery
 {
 public:
-    IEntity<Args...> single() const
+    EPointer<IEntity<Args...>> single() const
     {
         IdSet ids = IEntity<Args...>::ComponentIds();
-        EntityList *entities = ECS::Utils::GlobalSystem()->getEntities();
-        for (IEntityObject *entity : *entities)
+        EPointer<EntityMap> entities = ECS::Global::Entities();
+        for (auto entity : *entities)
         {
-            IdSet entity_ids = entity->getComponentIds();
+            IdSet entity_ids = entity.second->getComponentIds();
             if (entity_ids.contains(ids))
             {
-                return ECS::QueryUtils::ConvertToQueryEntity<Args...>(entity);
+                return ECS::QueryUtils::ConvertToQueryEntity<Args...>(entity.second);
             }
         }
         return IEntity<Args...>();
@@ -96,17 +93,19 @@ class IQueryMul
     : public IQuery
 {
 public:
-    EVector<IEntity<Args...>> mul() const
+    EVector<
+        EPointer<IEntity<Args...>>>
+    mul() const
     {
-        EVector<IEntity<Args...>> results;
+        EVector<EPointer<IEntity<Args...>>> results;
         IdSet ids = IEntity<Args...>::ComponentIds();
-        EntityList *entities = ECS::Utils::GlobalSystem()->getEntities();
-        for (IEntityObject *entity : *entities)
+        EPointer<EntityMap> entities = ECS::Global::Entities();
+        for (auto entity : *entities)
         {
-            IdSet entity_ids = entity->getComponentIds();
+            IdSet entity_ids = entity.second->getComponentIds();
             if (entity_ids.contains(ids))
             {
-                results.push_back(ECS::QueryUtils::ConvertToQueryEntity<Args...>(entity));
+                results.push_back(ECS::QueryUtils::ConvertToQueryEntity<Args...>(entity.second));
             }
         }
         return results;

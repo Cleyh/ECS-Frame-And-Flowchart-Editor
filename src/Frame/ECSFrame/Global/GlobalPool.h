@@ -2,17 +2,17 @@
 
 #include <type_traits>
 
-#include "ECSFrame/Model/Entity/IEntity.h"
 #include "ECSFrame/Model/Component/IComponent.h"
+#include "ECSFrame/Model/Entity/IEntity.h"
 #include "ECSFrame/Range/ERange.h"
 
 /* 前向声明 */
 class ComponentConstructor;
 
 /* Global */
-
-using EntityMap = EMap<size_t, EPointer<IEntityObject>>;
 /// @brief 全局实体池
+using EntityMap = EMap<size_t, EPointer<IEntityObject>>;
+/// @brief 全局组件池
 /// 用于存储所有实体
 /// key: 实例ID
 /// value: 实体指针
@@ -22,49 +22,82 @@ using ComponentMap = EMap<size_t, EPointer<IComponentObject>>;
 /// value: 该组件的构造器
 using ComponentRegistry = EMap<size_t, EPointer<ComponentConstructor>>;
 
+/* Utils Functions */
+namespace ECS
+{
+    namespace Utils
+    {
+
+    }
+}
+
+/**
+ * 全局池
+ * 用于存储全局实体和组件
+ *
+ * ComponentMap - 会接管所有entity中组件的所有权
+ * EntityMap - 用于存储所有实体
+ * ComponentRegistry - 用于存储所有组件类型的注册信息
+ */
 class GlobalPool
 {
 public:
+    GlobalPool() = default;
+    ~GlobalPool() = default;
+
+public: /* Getter */
+    EPointer<EntityMap> getEntities() { return m_entities; }
+    EPointer<ComponentMap> getComponents() { return m_components; }
+    EPointer<ComponentRegistry> getComponentRegistry() { return m_component_registry; }
+
+public: /* Remove Functions */
+    bool removeEntity(size_t entityId);
+    bool removeComponent(size_t componentId);
+    bool removeComponentType(size_t componentTypeId);
+
+public: /* Add Functions */
     /// @brief 添加实体到全局实体池
     /// @param entity 实体指针
     /// @tparam Args... 实体组件类型，入参自动推导
     template <typename... Args>
     void addEntity(EPointer<IEntity<Args...>> entity)
     {
-        (registerComponent<Args>(), ...);
+        // 将实体中的组件插入全局池，如果组件已经存在，则entity代表可能重复，entity不能插入
+        auto entity_ids = entity->getComponentIds();
+        for (auto id : entity_ids)
+        {
+            if (m_components->contains(id))
+            {
+                return;
+            }
+        }
 
-        // auto ids = IEntity<Args...>::ComponentIds();
-        // for (auto id : ids)
-        // {
-        //     if (auto component = entity->getComponent(id);
-        //         component && m_components.contains(id))
-        //         // 如果组件已存在，则不允许重复添加
-        //         return;
-        // }
+        // 将实体插入全局实体池
+        bool success = m_entities->insert({reinterpret_cast<size_t>(entity.get()), entity});
 
-        m_entities.insert({reinterpret_cast<size_t>(entity.get()), entity});
-        // for (auto id : ids)
-        // {
-        //     m_components.insert(id, entity->getComponent(id));
-        // }
+        // 注册组件，在entity成功插入后再注册组件
+        if (success)
+        {
+            (registerComponent<Args>(), ...);
+        }
     }
 
     template <typename T>
     bool registerComponent()
     {
         auto id = IComponent<T>::TypeId();
-        if (m_component_registry.contains(id))
+        if (m_component_registry->contains(id))
         {
             return false;
         }
-        m_component_registry.insert({id, EPointer<ComponentConstructor>::make()});
+        m_component_registry->insert({id, EPointer<ComponentConstructor>::make()});
         return true;
     }
 
 private:
-    EntityMap m_entities;
-    ComponentMap m_components;
-    ComponentRegistry m_component_registry;
+    EPointer<EntityMap> m_entities = EPointer<EntityMap>::make();
+    EPointer<ComponentMap> m_components = EPointer<ComponentMap>::make();
+    EPointer<ComponentRegistry> m_component_registry = EPointer<ComponentRegistry>::make();
 };
 
 class ComponentConstructor

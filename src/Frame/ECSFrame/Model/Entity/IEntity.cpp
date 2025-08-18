@@ -4,14 +4,9 @@
 /////////////////////////////////////////////////
 // IEntityObject implementation
 /////////////////////////////////////////////////
-void IEntityObject::attach(EPointer<IComponentObject> component)
+void IEntityObject::_attach(size_t componentId, EPointer<IComponentObject> pcomponent)
 {
-    size_t componentId = component->getTypeId();
-    if (components.contains(componentId))
-    {
-        return;
-    }
-    components.insert({componentId, component});
+    components[componentId] = pcomponent;
 }
 
 size_t IEntityObject::getTypeId() const
@@ -39,14 +34,14 @@ EPointer<IComponentObject> IEntityObject::getComponent(size_t componentId)
     return components.get(componentId, {});
 }
 
-void IEntityObject::setComponent(size_t componentId, EPointer<IComponentObject> component)
+void IEntityObject::setComponent(size_t componentId, EPointer<IComponentObject> pcomponent)
 {
     if (!components.contains(componentId))
     {
-        attach(component);
+        _attach(componentId, pcomponent);
         return;
     }
-    components[componentId] = component;
+    components[componentId] = pcomponent;
 }
 
 IEntityObject::IEntityObject()

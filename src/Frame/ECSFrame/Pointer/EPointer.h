@@ -1,8 +1,22 @@
 ﻿#pragma once
 #include <type_traits>
+#include <iostream>
 #include <functional>
 #include <memory>
 
+/**
+ * EPointer 智能指针封装
+ * useage:
+ * ```cpp
+ * // 无参构造，初始为nullptr
+ * EPointer<MyClass> ptr{};
+ * EPointer<MyClass> ptr{nullptr};
+ *
+ * // 初始化，等同new MyClass()
+ * EPointer<MyClass> ptr = EPointer<MyClass>::make();
+ * EPointer<MyClass> ptr = EPointer<MyClass>::make(arg1, arg2, ...);
+ * ```
+ */
 template <typename T>
 class EPointer
     : public std::shared_ptr<T>
@@ -11,6 +25,7 @@ public:
     using std::shared_ptr<T>::shared_ptr; // 继承构造函数
     // 默认构造
     EPointer() = default;
+
     // 从shared_ptr构造
     EPointer(const std::shared_ptr<T> &ptr) : std::shared_ptr<T>(ptr) {}
     EPointer(std::shared_ptr<T> &&ptr) : std::shared_ptr<T>(std::move(ptr)) {}
