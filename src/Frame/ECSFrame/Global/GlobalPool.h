@@ -60,7 +60,7 @@ public: /* Add Functions */
     /// @param entity 实体指针
     /// @tparam Args... 实体组件类型，入参自动推导
     template <typename... Args>
-    void addEntity(EPointer<IEntity<Args...>> entity)
+    void addEntity(EPointer<IEntity<Args...>> &entity)
     {
         // 将实体中的组件插入全局池，如果组件已经存在，则entity代表可能重复，entity不能插入
         auto entity_ids = entity->getComponentIds();
@@ -73,10 +73,15 @@ public: /* Add Functions */
         }
 
         // 将实体插入全局实体池
-        bool success = m_entities->insert({reinterpret_cast<size_t>(entity.get()), entity});
+        auto instance_id = reinterpret_cast<size_t>(entity.get());
+        if (m_entities->contains(instance_id))
+        {
+            return; // 实体已存在
+        }
+
+        m_entities->insert({instance_id, entity});
 
         // 注册组件，在entity成功插入后再注册组件
-        if (success)
         {
             (registerComponent<Args>(), ...);
         }

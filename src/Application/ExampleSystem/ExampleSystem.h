@@ -16,25 +16,16 @@ struct Position
     int y = 0;
 };
 
-void functionalSubSystem(IQueryMul<Velocity> &query)
+void functionalSubSystem()
 {
-    auto entities = query.mul();
-    for (auto single : entities)
-    {
-        // Assuming single is an IEntity<Velocity>
-        // and has a method getValue to retrieve the Velocity component.
-        auto velocity = single->Value<Velocity>();
-        velocity->vx += 1;
-        velocity->vy += 1;
-        qDebug() << "entity: " << single->getInstanceId() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
-    }
-}
-
-void functionalSubSystem2(IQueryMul<Velocity> query_no_ref)
-{
-    // auto single = query.single();
-    // Velocity *velocity = single.getValue<Velocity>();
-    // velocity->vx += 1;
-    // velocity->vy += 1;
-    // qDebug() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
+    // auto entities = query.mul();
+    // for (auto single : entities)
+    // {
+    //     // Assuming single is an IEntity<Velocity>
+    //     // and has a method getValue to retrieve the Velocity component.
+    //     auto velocity = single->Value<Velocity>();
+    //     velocity->vx += 1;
+    //     velocity->vy += 1;
+    //     qDebug() << "entity: " << single->getInstanceId() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
+    // }
 }
