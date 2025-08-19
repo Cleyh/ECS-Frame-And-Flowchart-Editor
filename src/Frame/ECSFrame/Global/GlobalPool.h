@@ -46,7 +46,10 @@ public:
     ~GlobalPool() = default;
 
 public: /* Getter */
-    EPointer<EntityMap> getEntities() { return m_entities; }
+    EPointer<EntityMap> getEntities()
+    {
+        return m_entities;
+    }
     EPointer<ComponentMap> getComponents() { return m_components; }
     EPointer<ComponentRegistry> getComponentRegistry() { return m_component_registry; }
 

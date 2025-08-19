@@ -20,13 +20,12 @@ void FApplication::initialize()
     mainWindow->show();
 
     ISystem system;
+    system.addFunction(functionalSubSystem);
 
     auto playerEntity = IEntity<Velocity>::create();
     auto playerEntity2 = IEntity<Velocity>::create();
 
     ECS::Global::Pool()->addEntity(playerEntity);
-
-    system.addFunction(functionalSubSystem);
 
     system.notify();
     system.notify();

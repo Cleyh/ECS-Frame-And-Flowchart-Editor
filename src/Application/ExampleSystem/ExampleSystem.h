@@ -16,16 +16,17 @@ struct Position
     int y = 0;
 };
 
-void functionalSubSystem()
+void functionalSubSystem(QueryMul<Velocity> &query)
 {
-    // auto entities = query.mul();
-    // for (auto single : entities)
-    // {
-    //     // Assuming single is an IEntity<Velocity>
-    //     // and has a method getValue to retrieve the Velocity component.
-    //     auto velocity = single->Value<Velocity>();
-    //     velocity->vx += 1;
-    //     velocity->vy += 1;
-    //     qDebug() << "entity: " << single->getInstanceId() << "Functional sub-system executed with velocity (" << velocity->vx << ", " << velocity->vy << ")";
-    // }
+    auto entities = query.mul();
+    for (auto &entity : entities)
+    {
+        auto velocity = entity->Value<Velocity>();
+        velocity->vx += 1;
+        velocity->vy += 1;
+
+        qDebug() << "Velocity updated: "
+                 << "vx = " << velocity->vx
+                 << ", vy = " << velocity->vy;
+    }
 }

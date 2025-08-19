@@ -12,14 +12,15 @@
 #include "ECSFrame/SystemUtils.h"
 
 template <typename... Args>
-class IQueryMul
+class QueryMul
     : public QueryCondition<ECS::Query::And<Args...>>
 {
+    using Parent = QueryCondition<ECS::Query::And<Args...>>;
 public:
     EVector<EPointer<IEntity<Args...>>>
-    mul() const
+    mul()
     {
-        auto result = IQuery::getAllResults();
+        auto result = Parent::getAllResults();
         EVector<EPointer<IEntity<Args...>>> query_results;
         for (auto &entity : result)
         {

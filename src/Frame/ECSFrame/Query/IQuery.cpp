@@ -6,6 +6,7 @@
 
 void IQuery::doQuery()
 {
+    results.clear();
     auto entities = ECS::Global::Entities();
     for (auto &pair : *entities)
     {
@@ -24,7 +25,7 @@ void IQuery::update()
 
 EVector<EPointer<IEntityObject>> IQuery::getAllResults()
 {
-    if (dirty)
+    // if (dirty)
     {
         doQuery();
         dirty = false;

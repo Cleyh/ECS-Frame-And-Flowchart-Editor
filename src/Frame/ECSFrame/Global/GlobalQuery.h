@@ -17,7 +17,8 @@ class GlobalQuery
     using QueryKey = size_t; // 查询的唯一标识符
     using QueryCache = EMap<size_t, EPointer<IQuery>>;
 public:
-
+    GlobalQuery() = default;
+    ~GlobalQuery() = default;
 
 protected:
     QueryCache queryCache; // 查询缓存

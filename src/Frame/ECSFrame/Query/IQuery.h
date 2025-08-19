@@ -56,22 +56,6 @@ namespace ECS
         struct Not;
 
         /**
-         * Condition Type Traits
-         * */
-
-        template <typename T>
-        inline constexpr bool is_and_v = std::is_same_v<T, And<typename T::Args...>>;
-
-        template <typename T>
-        inline constexpr bool is_or_v = std::is_same_v<T, Or<typename T::Args...>>;
-
-        template <typename T>
-        inline constexpr bool is_not_v = std::is_same_v<T, Not<typename T::Arg>>;
-
-        template <typename T>
-        inline constexpr bool is_leaf_v = !is_and_v<T> && !is_or_v<T> && !is_not_v<T>;
-
-        /**
          * Condition Evaluator
          * usage:
          * - Evaluator<And<A, B, Not<C>, Or<D,E>>> query; == (A && B && !C && (D || E))
@@ -131,6 +115,10 @@ class IQuery
     using MatchFunc = std::function<bool(EPointer<IEntityObject>)>;
 
 public:
+    IQuery() = default;
+    virtual ~IQuery() = default;
+
+public:
     // doQuery() is the main function to execute the query logic.
     // Implementations should call base function
     virtual void doQuery();
@@ -148,7 +136,8 @@ public:
 
 protected:
     bool dirty = true;
-    MatchFunc matchFunc = [](EPointer<IEntityObject> entity) { return false; };
+    MatchFunc matchFunc = [](EPointer<IEntityObject> entity)
+    { return false; };
     QueryResultList results;
 };
 
