@@ -24,6 +24,10 @@ namespace ECS
     namespace Global
     {
         /**
+         * Global Pool
+         */
+
+        /*
          * Global Pool Accessor
          * Provides static access to the global pool and query.
          */
@@ -38,7 +42,7 @@ namespace ECS
             return GlobalManager::getPool()->getEntities();
         }
 
-        /**
+        /*
          * Global Query Accessor
          * Provides static access to the global query.
          */
@@ -46,6 +50,10 @@ namespace ECS
         {
             return GlobalManager::getQuery();
         }
+    }
+
+    namespace Notify
+    {
     }
 
 } // namespace ECS

@@ -63,5 +63,6 @@ public: /* 封装常用方法 */
     {
         auto casted = std::dynamic_pointer_cast<U>(*this);
         return EPointer<U>(casted);
+        // return std::static_pointer_cast<U>(*this);
     }
 };

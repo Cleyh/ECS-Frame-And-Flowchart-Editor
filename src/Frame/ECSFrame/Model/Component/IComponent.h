@@ -31,17 +31,9 @@ public: /* static function */
 public:
     EPointer<T> Value()
     {
-        return m_value;
+        return EPointer<T>(&m_value, [](void *ptr) {});
     }
 
-private:
-    EPointer<T> m_value = EPointer<T>::make();
+protected:
+    T m_value;
 };
-
-template <typename T>
-class IComponentWrapper
-    : public EPointer<IComponent<T>>
-{
-public:
-};
-

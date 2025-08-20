@@ -25,6 +25,14 @@ TODO
 缓存过期/数据更新时触发更新，更新方式：
 - 遍历Map，调用IQuery->update();
 
+更新时机：
+1. 新增/删除实体        addEntity(...)      /   removeEntity(...)
+2. 实体添加/分离组件    entity->attach(...) /   entity->detach(...)
+
+通知信息：
+1. 实体池变动: 变动类型 /   涉及实体    /   涉及组件
+2. 组件级变动: 变动类型 /   涉及实体    /   涉及组件
+
 ## QueryCondition
 
 

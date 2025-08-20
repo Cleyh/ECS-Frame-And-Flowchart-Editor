@@ -2,10 +2,12 @@
 
 #include <type_traits>
 
+#include "ECSFrame/Global/GlobalQuery.h"
 #include "ECSFrame/Model/System/ISystem.h"
 #include "ECSFrame/Model/Component/IComponent.h"
 #include "ECSFrame/Model/Entity/IEntity.h"
 #include "ECSFrame/Pointer/EPointer.h"
+#include "ECSFrame/Range/ERange.h"
 #include "ECSFrame/SystemUtils.h"
 
 /**
@@ -73,6 +75,11 @@ namespace ECS
                 const IdSet have = entity->getComponentIds();
                 return have.contains(need);
             }
+
+            static void conditionConfig(EVector<size_t> &config)
+            {
+                config.push_back(IComponent<Cond>::TypeId());
+            }
         };
 
         template <NonEmpty... Args>
@@ -81,6 +88,11 @@ namespace ECS
             static bool matches(EPointer<IEntityObject> entity)
             {
                 return (Evaluator<Args>::matches(entity) && ...);
+            }
+
+            static void conditionConfig(EVector<size_t> &config)
+            {
+                (Evaluator<Args>::conditionConfig(config), ...);
             }
         };
 
@@ -91,6 +103,11 @@ namespace ECS
             {
                 return (Evaluator<Args>::matches(entity) || ...);
             }
+
+            static void conditionConfig(EVector<size_t> &config)
+            {
+                (Evaluator<Args>::conditionConfig(config), ...);
+            }
         };
 
         template <typename... Args>
@@ -99,6 +116,11 @@ namespace ECS
             static bool matches(EPointer<IEntityObject> entity)
             {
                 return (!Evaluator<Args>::matches(entity) && ...);
+            }
+
+            static void conditionConfig(EVector<size_t> &config)
+            {
+                (Evaluator<Args>::conditionConfig(config), ...);
             }
         };
     }
@@ -113,6 +135,7 @@ class IQuery
     using QueryResult = EPointer<IEntityObject>;
     using QueryResultList = EVector<EPointer<IEntityObject>>;
     using MatchFunc = std::function<bool(EPointer<IEntityObject>)>;
+    using QueryConfig = EVector<size_t>;
 
 public:
     IQuery() = default;
@@ -125,20 +148,22 @@ public:
 
     // Global Query call this function to update the results.
     // This function will check itself needs to update.
-    virtual void update(/* some args */);
+    virtual void update(QueryNotifyMsg &msg);
 
 public:
-    bool isDirty() const { return dirty; }
+    bool isDirty() const { return m_dirty; }
 
 public:
     QueryResultList getAllResults();
     QueryResult operator[](size_t index) const;
 
 protected:
-    bool dirty = true;
-    MatchFunc matchFunc = [](EPointer<IEntityObject> entity)
+    bool m_dirty = true;
+
+    MatchFunc m_matchFunc = [](EPointer<IEntityObject> entity)
     { return false; };
-    QueryResultList results;
+    QueryResultList m_results;
+    QueryConfig m_config;
 };
 
 /*
@@ -156,9 +181,10 @@ class QueryCondition
 public:
     QueryCondition()
     {
-        matchFunc = [](EPointer<IEntityObject> entity)
+        m_matchFunc = [](EPointer<IEntityObject> entity)
         {
             return (ECS::Query::Evaluator<Args>::matches(entity) && ...);
         };
+        (ECS::Query::Evaluator<Args>::conditionConfig(m_config), ...);
     }
 };

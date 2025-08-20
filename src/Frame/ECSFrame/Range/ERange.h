@@ -8,6 +8,11 @@ template <typename T>
 class EVector
     : public std::vector<T>
 {
+public:
+    bool contains(const T &value) const
+    {
+        return std::find(this->begin(), this->end(), value) != this->end();
+    }
 };
 
 template <typename K, typename V>
