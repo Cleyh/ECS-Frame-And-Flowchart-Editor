@@ -13,14 +13,14 @@
 
 template <typename... Args>
 class QueryMul
-    : public QueryCondition<ECS::Query::And<Args...>>
+    : public IQueryProxy<ECS::Query::And<Args...>>
 {
-    using Parent = QueryCondition<ECS::Query::And<Args...>>;
+    using Parent = IQueryProxy<ECS::Query::And<Args...>>;
 public:
     EVector<EPointer<IEntity<Args...>>>
     mul()
     {
-        auto result = Parent::getAllResults();
+        auto result = Parent::Core()->getAllResults();
         EVector<EPointer<IEntity<Args...>>> query_results;
         for (auto &entity : result)
         {

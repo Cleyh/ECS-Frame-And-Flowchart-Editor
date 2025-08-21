@@ -1,5 +1,11 @@
 #include "IQuery.h"
 
+#include <iostream>
+
+#include "ECSFrame/Global/GlobalPool.h"
+#include "ECSFrame/Global/GlobalQuery.h"
+#include "ECSFrame/SystemUtils.h"
+
 /**
  * IQuery Util Functions
  */
@@ -20,6 +26,10 @@ bool checkMsgComponent(EVector<size_t> &config, EVector<size_t> &changed)
  * IQuery Implementation
  */
 
+IQuery::IQuery()
+{
+}
+
 void IQuery::doQuery()
 {
     m_results.clear();
@@ -34,18 +44,18 @@ void IQuery::doQuery()
     }
 }
 
-void IQuery::update(QueryNotifyMsg &msg)
+void IQuery::update(EntityEventMsg &msg)
 {
     switch (msg.type)
     {
-    case NotifyType::ENTITY_ADD:
-    case NotifyType::ENTITY_REMOVE:
+    case EntityEventType::ENTITY_ADD:
+    case EntityEventType::ENTITY_REMOVE:
 
         m_dirty = true;
         break;
 
-    case NotifyType::COMPONENT_ATTACH:
-    case NotifyType::COMPONENT_DETACH:
+    case EntityEventType::COMPONENT_ATTACH:
+    case EntityEventType::COMPONENT_DETACH:
 
     {
         if (checkMsgComponent(m_config, msg.componentIds))
@@ -61,7 +71,7 @@ void IQuery::update(QueryNotifyMsg &msg)
 
 EVector<EPointer<IEntityObject>> IQuery::getAllResults()
 {
-    // if (m_dirty)
+    if (m_dirty)
     {
         doQuery();
         m_dirty = false;

@@ -2,34 +2,14 @@
 
 #include <type_traits>
 
+#include "ECSFrame/Forward.h"
+#include "ECSFrame/Notify/Notifier.h"
+
 #include "ECSFrame/Model/Component/IComponent.h"
 #include "ECSFrame/Model/Entity/IEntity.h"
+
+#include "ECSFrame/Pointer/EPointer.h"
 #include "ECSFrame/Range/ERange.h"
-
-/* 前向声明 */
-class ComponentConstructor;
-
-/* Global */
-/// @brief 全局实体池
-using EntityMap = EMap<size_t, EPointer<IEntityObject>>;
-/// @brief 全局组件池
-/// 用于存储所有实体
-/// key: 实例ID
-/// value: 实体指针
-using ComponentMap = EMap<size_t, EPointer<IComponentObject>>;
-/// @brief 全局组件类型注册表
-/// key: 组件ID
-/// value: 该组件的构造器
-using ComponentRegistry = EMap<size_t, EPointer<ComponentConstructor>>;
-
-/* Utils Functions */
-namespace ECS
-{
-    namespace Utils
-    {
-
-    }
-}
 
 /**
  * 全局池
@@ -40,10 +20,14 @@ namespace ECS
  * ComponentRegistry - 用于存储所有组件类型的注册信息
  */
 class GlobalPool
+    : public IGlobalNotifyObject,
+      public IGlobalNotify<GlobalQuery>
 {
 public:
     GlobalPool() = default;
     ~GlobalPool() = default;
+
+    virtual void notify(EPointer<MsgObject> msg) override;
 
 public: /* Getter */
     EPointer<EntityMap> getEntities()
@@ -66,7 +50,7 @@ public: /* Add Functions */
     void addEntity(EPointer<IEntity<Args...>> &entity)
     {
         // 将实体中的组件插入全局池，如果组件已经存在，则entity代表可能重复，entity不能插入
-        auto entity_ids = entity->getComponentIds();
+        IdSet entity_ids = entity->getComponentIds();
         for (auto id : entity_ids)
         {
             if (m_components->contains(id))
@@ -88,6 +72,13 @@ public: /* Add Functions */
         {
             (registerComponent<Args>(), ...);
         }
+
+        auto msg = EPointer<EntityEventMsg>(
+            new EntityEventMsg(
+                EntityEventType::ENTITY_ADD, instance_id, EVector<size_t>::FromSet(entity_ids)
+            )
+        );
+        SendNotify(msg);
     }
 
     template <typename T>

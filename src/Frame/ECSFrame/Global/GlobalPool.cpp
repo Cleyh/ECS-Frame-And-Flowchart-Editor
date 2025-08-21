@@ -1,5 +1,9 @@
 #include "GlobalPool.h"
 
+void GlobalPool::notify(EPointer<MsgObject> msg)
+{
+}
+
 bool GlobalPool::removeEntity(size_t entityId)
 {
     auto entity = m_entities->get(entityId, nullptr);

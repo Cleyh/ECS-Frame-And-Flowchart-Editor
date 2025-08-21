@@ -18,6 +18,9 @@ struct Position
 
 void functionalSubSystem(QueryMul<Velocity> &query)
 {
+    static int count = 0;
+    qDebug() << "Functional Subsystem running: " << count;
+
     auto entities = query.mul();
     for (auto &entity : entities)
     {
@@ -29,4 +32,5 @@ void functionalSubSystem(QueryMul<Velocity> &query)
                  << "vx = " << velocity->vx
                  << ", vy = " << velocity->vy;
     }
+    count++;
 }

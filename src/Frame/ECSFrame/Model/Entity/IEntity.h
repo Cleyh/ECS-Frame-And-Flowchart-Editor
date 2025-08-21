@@ -4,14 +4,11 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "ECSFrame/Forward.h"
 #include "ECSFrame/Model/Component/IComponent.h"
 
 #include "ECSFrame/Range/ERange.h"
 #include "ECSFrame/Pointer/EPointer.h"
-
-/* Entity */
-using IdSet = ESet<size_t>;
-using ComponentMap = EMap<size_t, EPointer<IComponentObject>>;
 
 /**
  * Entity基础对象
@@ -19,6 +16,8 @@ using ComponentMap = EMap<size_t, EPointer<IComponentObject>>;
  */
 class IEntityObject
 {
+    using ComponentMap = EMap<size_t, EPointer<IComponentObject>>;
+
 protected:
     virtual void _attach(size_t componentId, EPointer<IComponentObject> pcomponent);
 

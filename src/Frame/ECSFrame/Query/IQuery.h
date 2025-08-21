@@ -2,13 +2,13 @@
 
 #include <type_traits>
 
+#include "ECSFrame/Notify/Notifier.h"
+#include "ECSFrame/SystemUtils.h"
 #include "ECSFrame/Global/GlobalQuery.h"
-#include "ECSFrame/Model/System/ISystem.h"
 #include "ECSFrame/Model/Component/IComponent.h"
 #include "ECSFrame/Model/Entity/IEntity.h"
 #include "ECSFrame/Pointer/EPointer.h"
 #include "ECSFrame/Range/ERange.h"
-#include "ECSFrame/SystemUtils.h"
 
 /**
  * Query namespace
@@ -132,13 +132,14 @@ namespace ECS
  */
 class IQuery
 {
+public:
     using QueryResult = EPointer<IEntityObject>;
     using QueryResultList = EVector<EPointer<IEntityObject>>;
     using MatchFunc = std::function<bool(EPointer<IEntityObject>)>;
     using QueryConfig = EVector<size_t>;
 
 public:
-    IQuery() = default;
+    IQuery();
     virtual ~IQuery() = default;
 
 public:
@@ -148,7 +149,7 @@ public:
 
     // Global Query call this function to update the results.
     // This function will check itself needs to update.
-    virtual void update(QueryNotifyMsg &msg);
+    virtual void update(EntityEventMsg &msg);
 
 public:
     bool isDirty() const { return m_dirty; }
@@ -187,4 +188,40 @@ public:
         };
         (ECS::Query::Evaluator<Args>::conditionConfig(m_config), ...);
     }
+};
+
+template <typename... Args>
+class IQueryProxy
+{
+    using QueryCore = QueryCondition<Args...>;
+
+public:
+    IQueryProxy()
+    {
+        auto global_query = ECS::Global::Query();
+        auto query_cache = global_query->getQuery(typeid(QueryCore).hash_code());
+
+        if (!query_cache)
+        {
+            m_query_core = EPointer<QueryCore>::make();
+            global_query->addQuery(m_query_core);
+        }
+        else
+        {
+            m_query_core = query_cache.cast<QueryCore>();
+        }
+    }
+
+    EPointer<QueryCore> Core() const
+    {
+        return m_query_core;
+    }
+
+    auto operator->() const
+    {
+        return Core();
+    }
+
+private:
+    EPointer<QueryCore> m_query_core;
 };

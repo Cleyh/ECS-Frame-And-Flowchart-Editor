@@ -13,6 +13,16 @@ public:
     {
         return std::find(this->begin(), this->end(), value) != this->end();
     }
+
+    static EVector<T> FromSet(const std::unordered_set<T> &set)
+    {
+        EVector<T> vec;
+        for (const auto &item : set)
+        {
+            vec.push_back(item);
+        }
+        return vec;
+    }
 };
 
 template <typename K, typename V>
